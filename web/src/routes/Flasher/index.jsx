@@ -5,6 +5,7 @@ import { useFirmwareLoader, useOnewheel } from "@hooks"
 import { ConnectionManager } from "../../components/ConnectionManager"
 import { useTranslation } from "react-i18next"
 import { useEffect, useState } from "react"
+import { MAGIC_UNLOCK_5100, START_UPDATE_MESSAGE } from "../../messages"
 
 const uuidBoard = 'e659f300-ea98-11e3-ac10-0800200c9a66'; // Board service
 const uuidHwVer = 'e659f318-ea98-11e3-ac10-0800200c9a66'; // Hardware version
@@ -62,6 +63,11 @@ export const FlasherPage = () => {
       const charWrite = charArr.find(c => c.uuid === uuidWrite);
       const charError = charArr.find(c => c.uuid === uuidError);
 
+      const blSupported = {
+        [true /*  Pint   */]: { 6: true },
+        [false /* Pint X */]: { 7: true },
+      };
+
       if (!charHwVer || !charFwVer || !charPerms || !charWrite || !charError) {
           let log = "Missing characteristic(s): ";
           if (!charHwVer) log += "HwVersion ";
@@ -116,10 +122,8 @@ export const FlasherPage = () => {
           alert(`Your bootloader is known to be incompatible. If you continue anyway you will most likely brick your board.`);
       }
 
+      await charWrite.writeValueWithResponse(START_UPDATE_MESSAGE)
 
-      // Ping the board once to keep auth around a bit longer.
-      // This gives you a bit more time if your software can't do auth.
-      await charFwVer.writeValueWithResponse(new Uint16Array([fwVer]));
       setMagicUnlockSuccess(true)
 
     } catch (e) {
