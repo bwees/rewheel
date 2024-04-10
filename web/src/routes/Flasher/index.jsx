@@ -125,7 +125,7 @@ export const FlasherPage = () => {
       await charWrite.writeValueWithResponse(START_UPDATE_MESSAGE)
 
       setMagicUnlockSuccess(true)
-
+      alert("Your board has been put into FW Update mode! Restart your board and then refresh this page and you will be able to flash!")
     } catch (e) {
       alert('Failed to unlock board: ' + e);
     } finally {
